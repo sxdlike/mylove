@@ -167,7 +167,7 @@ function preloadPhotos(count) {
             return;
         }
         const img = new Image();
-        img.src = `images/g${currentIndex}.jpg`;
+        img.src = `images/0${currentIndex}.jpg`;
         img.onload = () => {
             let photoEl = document.createElement('img');
             photoEl.src = img.src;
