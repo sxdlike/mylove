@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>你的太阳我的心~</title>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
 body {
     margin: 0;
@@ -19,7 +19,6 @@ body {
     width: 100%; height: 100%;
     z-index: 0;
 }
-
 .photo {
     position: absolute;
     width: 100px;
@@ -35,7 +34,7 @@ body {
     50% { transform: translateY(-15px); }
 }
 @keyframes fadeIn {
-    to { opacity: 0.9; } /* 照片更明显 */
+    to { opacity: 0.9; }
 }
 
 /* 中心标题呼吸闪烁 */
@@ -50,9 +49,9 @@ body {
     text-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 25px rgba(255,192,203,0.8);
     opacity: 0;
     transition: opacity 2s ease;
-    animation: heartbeat 1.5s infinite;
+    animation: heartbeatTitle 1.5s infinite;
 }
-@keyframes heartbeat {
+@keyframes heartbeatTitle {
     0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.85; }
 }
@@ -65,7 +64,7 @@ canvas {
     pointer-events: none;
 }
 
-/* 漂浮中英文字 */
+/* 漂浮文字效果 */
 .floatingText {
     position: absolute;
     font-size: 32px;
@@ -86,27 +85,55 @@ canvas {
     text-shadow: 0 0 8px #fff, 0 0 15px #ffd1dc;
 }
 
-/* 音乐按钮 */
-#musicBtn {
+/* 单一 ❤️ 按钮 */
+/* ❤️ 按钮容器 */
+#playBtn {
     position: fixed;
-    top: 15px;
-    right: 15px;
-    width: 45px;
-    height: 45px;
-    border: none;
-    border-radius: 50%;
-    font-size: 22px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     cursor: pointer;
-    background: rgba(255,255,255,0.3);
-    color: #fff;
-    box-shadow: 0 0 10px rgba(255,255,255,0.6);
-    transition: background 0.3s, transform 0.3s;
+    animation: heartbeatBtn 1.2s infinite ease-in-out, rotateFloat 6s infinite linear;
     z-index: 999;
 }
-#musicBtn:hover {
-    background: rgba(255,255,255,0.5);
-    transform: scale(1.1);
+
+/* ❤️ 图标样式 */
+#playBtn span {
+    font-size: 100px;
+    color: #ff4d6d;
+    text-shadow: 0 0 20px rgba(255,77,109,0.8);
+    animation: glow 1s infinite alternate;
 }
+
+/* 心跳呼吸 */
+@keyframes heartbeatBtn {
+    0%, 100% { transform: translate(-50%, -50%) scale(1);}
+    50% { transform: translate(-50%, -50%) scale(1.2);}
+}
+
+/* 光晕闪烁 */
+@keyframes glow {
+    from { opacity: 0.7; }
+    to { opacity: 1; }
+}
+
+/* ❤️ 缓慢旋转+上下浮动效果 */
+@keyframes rotateFloat {
+    0% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
+    25% { transform: translate(-50%, -50%) rotate(3deg) translateY(-5px); }
+    50% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
+    75% { transform: translate(-50%, -50%) rotate(-3deg) translateY(5px); }
+    100% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
+}
+
+/* 点击淡出 */
+#playBtn.fadeOut {
+    animation: fadeAway 0.8s forwards;
+}
+@keyframes fadeAway {
+    to { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+}
+
 </style>
 </head>
 <body>
@@ -115,11 +142,13 @@ canvas {
 <div id="child">💗东东与盼盼💗</div>
 <canvas id="heart"></canvas>
 
+<!-- ❤️ 按钮 -->
+<div id="playBtn"><span>❤️</span></div>
+
 <!-- 音乐播放器 -->
-<audio id="music" autoplay loop preload="auto">
+<audio id="music" preload="auto" loop>
     <source src="images/如一.mp3" type="audio/mpeg">
 </audio>
-<button id="musicBtn" title="播放/暂停音乐">🎵</button>
 
 <script>
 const photoFlow = document.getElementById('photoFlow');
@@ -127,10 +156,10 @@ const title = document.getElementById("child");
 let totalPhotos = 60;
 let photos = [];
 
-/* 照片加载并出现速度控制 */
+/* 照片加载并出现 */
 function preloadPhotos(count) {
     let currentIndex = 1;
-    let appearInterval = 200; // 每张出现间隔（毫秒）
+    let appearInterval = 200;
     const timer = setInterval(() => {
         if (currentIndex > count) {
             clearInterval(timer);
@@ -165,19 +194,14 @@ function scaleAndTranslate(pos, sx, sy, dx, dy) {
     return [dx + pos[0] * sx, dy + pos[1] * sy];
 }
 
-/* 照片依次飞入心形 */
+/* 照片飞向心形 */
 function startRomanticFinale() {
     let heartPoints = [];
     let dr = (Math.PI * 2) / photos.length;
     for (let i = 0; i < Math.PI * 2; i += dr) {
-        heartPoints.push(
-            scaleAndTranslate(heartPosition(i), 270, 18, window.innerWidth/2, window.innerHeight/2)
-        );
+        heartPoints.push(scaleAndTranslate(heartPosition(i), 270, 18, window.innerWidth/2, window.innerHeight/2));
     }
-
-    // 将左右照片分组
-    let leftGroup = [];
-    let rightGroup = [];
+    let leftGroup = [], rightGroup = [];
     photos.forEach((img, i) => {
         let target = heartPoints[i];
         if (target[0] < window.innerWidth / 2) {
@@ -186,36 +210,25 @@ function startRomanticFinale() {
             rightGroup.push({img, target});
         }
     });
-
     let index = 0;
-    let steps = 50; // 飞入速度
+    let steps = 50;
     function flyPair() {
         if (index >= Math.max(leftGroup.length, rightGroup.length)) {
             showCenterTitle();
             startFloatingBackgroundText();
             return;
         }
-
-        // 左侧
-        if (index < leftGroup.length) {
-            movePhoto(leftGroup[index].img, leftGroup[index].target, steps);
-        }
-        // 右侧
-        if (index < rightGroup.length) {
-            movePhoto(rightGroup[index].img, rightGroup[index].target, steps);
-        }
-
+        if (index < leftGroup.length) movePhoto(leftGroup[index].img, leftGroup[index].target, steps);
+        if (index < rightGroup.length) movePhoto(rightGroup[index].img, rightGroup[index].target, steps);
         index++;
-        setTimeout(flyPair, 120); // 每对照片的间隔
+        setTimeout(flyPair, 120);
     }
-
     function movePhoto(img, target, steps) {
         let startX = parseFloat(img.style.left);
         let startY = parseFloat(img.style.top);
         let dx = target[0] - startX;
         let dy = target[1] - startY;
         let stepCount = 0;
-
         function animateMove() {
             stepCount++;
             let progress = stepCount / steps;
@@ -227,50 +240,43 @@ function startRomanticFinale() {
         }
         animateMove();
     }
-
-    // 启动从左右同时进入的心形拼合
     flyPair();
 }
-
 
 /* 中心标题淡入 */
 function showCenterTitle(){
     title.style.opacity = 1;
 }
 
-/* 漂浮文字效果 */
+/* 漂浮文字 */
 function startFloatingBackgroundText() {
     setInterval(() => {
-        createFloatingText();
-    }, 120);
-}
-
-function createFloatingText() {
-    const text = document.createElement("div");
-    text.className = "floatingText";
-    text.innerHTML = `<span class="cn">喜欢盼盼</span> <span class="en">Love Panpan</span>`;
-    let startX = Math.random() * window.innerWidth;
-    let startY = Math.random() * window.innerHeight;
-    let driftX = (Math.random() - 0.5) * 1.5;
-    let driftY = (Math.random() - 0.5) * 1.5;
-    text.style.left = `${startX}px`;
-    text.style.top = `${startY}px`;
-    document.body.appendChild(text);
-    let opacity = 1;
-    function animate() {
-        startX += driftX;
-        startY += driftY;
-        opacity -= 0.004;
+        const text = document.createElement("div");
+        text.className = "floatingText";
+        text.innerHTML = `<span class="cn">喜欢盼盼</span> <span class="en">Love Panpan</span>`;
+        let startX = Math.random() * window.innerWidth;
+        let startY = Math.random() * window.innerHeight;
+        let driftX = (Math.random() - 0.5) * 1.5;
+        let driftY = (Math.random() - 0.5) * 1.5;
         text.style.left = `${startX}px`;
         text.style.top = `${startY}px`;
-        text.style.opacity = opacity;
-        if (opacity > 0) {
-            requestAnimationFrame(animate);
-        } else {
-            text.remove();
+        document.body.appendChild(text);
+        let opacity = 1;
+        function animate() {
+            startX += driftX;
+            startY += driftY;
+            opacity -= 0.004;
+            text.style.left = `${startX}px`;
+            text.style.top = `${startY}px`;
+            text.style.opacity = opacity;
+            if (opacity > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                text.remove();
+            }
         }
-    }
-    requestAnimationFrame(animate);
+        requestAnimationFrame(animate);
+    }, 120);
 }
 
 /* 粒子爱心背景 */
@@ -298,7 +304,6 @@ function pulse(kx, ky) {
         ];
     }
 }
-
 let traceCount = 50;
 let particles = [];
 for (let i = 0; i < heartPointsCount; i++) {
@@ -313,7 +318,6 @@ for (let i = 0; i < heartPointsCount; i++) {
         trace: Array.from({length: traceCount}, () => ({x, y}))
     };
 }
-
 let timeStep = 0;
 function loop() {
     let n = -Math.cos(timeStep);
@@ -355,30 +359,64 @@ function loop() {
 }
 loop();
 
-/* 启动照片加载 */
-preloadPhotos(totalPhotos);
-
-/* 音乐按钮控制 */
-window.addEventListener('load', () => {
-    const music = document.getElementById('music');
-    const btn = document.getElementById('musicBtn');
-
-    music.play().then(()=>{
-        btn.textContent = "⏸";
-    }).catch(err => {
-        console.warn("自动播放被阻止，需要点击按钮:", err);
-    });
-
-    btn.addEventListener('click', () => {
-        if (music.paused) {
-            music.play().then(()=>{
-                btn.textContent = "⏸";
-            }).catch(err => console.warn("播放失败:", err));
-        } else {
-            music.pause();
-            btn.textContent = "🎵";
+/* 点击爱心烟花 */
+function heartExplosion(x, y) {
+    let particles = [];
+    const colors = ["#ff4d6d", "#ffb6c1", "#ff69b4", "#ff1493", "#db7093"];
+    for (let i = 0; i < 30; i++) {
+        const elem = document.createElement('div');
+        elem.textContent = '❤️';
+        elem.style.position = 'fixed';
+        elem.style.left = `${x}px`;
+        elem.style.top = `${y}px`;
+        elem.style.fontSize = `${Math.random() * 20 + 14}px`;
+        elem.style.pointerEvents = 'none';
+        elem.style.zIndex = 1000;
+        elem.style.color = colors[Math.floor(Math.random() * colors.length)];
+        document.body.appendChild(elem);
+        particles.push({
+            el: elem,
+            angle: Math.random() * 2 * Math.PI,
+            speed: Math.random() * 5 + 2,
+            opacity: 1
+        });
+    }
+    function animate() {
+        particles.forEach(p => {
+            const left = parseFloat(p.el.style.left);
+            const top = parseFloat(p.el.style.top);
+            p.el.style.left = `${left + Math.cos(p.angle) * p.speed}px`;
+            p.el.style.top = `${top + Math.sin(p.angle) * p.speed}px`;
+            p.opacity -= 0.02;
+            p.el.style.opacity = p.opacity;
+            if (p.opacity <= 0) {
+                p.el.remove();
+            }
+        });
+        particles = particles.filter(p => p.opacity > 0);
+        if (particles.length > 0) {
+            requestAnimationFrame(animate);
         }
-    });
+    }
+    animate();
+}
+
+/* 播放按钮点击启动动画 */
+const playBtn = document.getElementById('playBtn');
+const music = document.getElementById('music');
+let started = false;
+playBtn.addEventListener('click', () => {
+    if (!started) {
+        started = true;
+        music.play().catch(err => console.warn("播放失败:", err));
+        const rect = playBtn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        heartExplosion(centerX, centerY);
+        preloadPhotos(totalPhotos);
+        playBtn.classList.add('fadeOut');
+        setTimeout(()=> playBtn.remove(), 800);
+    }
 });
 </script>
 
