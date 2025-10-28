@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>你的太阳我的心~</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+body {
+    margin: 0;
+    font-family: "STKaiti", serif;
+    overflow: hidden;
+    background: #000;
+}
+
+/* 照片区域 */
+#photoFlow {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+}
+
+.photo {
+    position: absolute;
+    width: 100px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(255,255,255,0.3);
+    opacity: 0;
+    animation: floatUpDown 6s ease-in-out infinite, fadeIn 1.5s forwards;
+}
+@keyframes floatUpDown {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+@keyframes fadeIn {
+    to { opacity: 0.9; } /* 照片更明显 */
+}
+
+/* 中心标题呼吸闪烁 */
+#child {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    font-size: clamp(30px, 5vw, 48px);
+    color: #f584b7;
+    text-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 25px rgba(255,192,203,0.8);
+    opacity: 0;
+    transition: opacity 2s ease;
+    animation: heartbeat 1.5s infinite;
+}
+@keyframes heartbeat {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.85; }
+}
+
+/* 粒子心形画布 */
+canvas {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* 漂浮中英文字 */
+.floatingText {
+    position: absolute;
+    font-size: 32px;
+    font-weight: bold;
+    pointer-events: none;
+    user-select: none;
+    z-index: 2;
+    opacity: 1;
+}
+.floatingText .cn {
+    font-family: "KaiTi","STKaiti",serif;
+    color: #ffb6c1;
+    text-shadow: 0 0 8px #fff, 0 0 15px #ffb6c1;
+}
+.floatingText .en {
+    font-family: "Pacifico", cursive;
+    color: #ffd1dc;
+    text-shadow: 0 0 8px #fff, 0 0 15px #ffd1dc;
+}
+
+/* 音乐按钮 */
+#musicBtn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 45px;
+    height: 45px;
+    border: none;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.3);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255,255,255,0.6);
+    transition: background 0.3s, transform 0.3s;
+    z-index: 999;
+}
+#musicBtn:hover {
+    background: rgba(255,255,255,0.5);
+    transform: scale(1.1);
+}
+</style>
+</head>
+<body>
+
+<div id="photoFlow"></div>
+<div id="child">💗东东与盼盼💗</div>
+<canvas id="heart"></canvas>
+
+<!-- 音乐播放器 -->
+<audio id="music" autoplay loop preload="auto">
+    <source src="images/如一.mp3" type="audio/mpeg">
+</audio>
+<button id="musicBtn" title="播放/暂停音乐">🎵</button>
+
+<script>
+const photoFlow = document.getElementById('photoFlow');
+const title = document.getElementById("child");
+let totalPhotos = 60;
+let photos = [];
+
+/* 照片加载并出现速度控制 */
+function preloadPhotos(count) {
+    let currentIndex = 1;
+    let appearInterval = 200; // 每张出现间隔（毫秒）
+    const timer = setInterval(() => {
+        if (currentIndex > count) {
+            clearInterval(timer);
+            setTimeout(startRomanticFinale, 1000);
+            return;
+        }
+        const img = new Image();
+        img.src = `images/p${currentIndex}.jpg`;
+        img.onload = () => {
+            let photoEl = document.createElement('img');
+            photoEl.src = img.src;
+            photoEl.alt = `浪漫回忆${currentIndex}`;
+            photoEl.className = 'photo';
+            photoEl.style.left = Math.random() * window.innerWidth + 'px';
+            photoEl.style.top  = Math.random() * window.innerHeight + 'px';
+            photoEl.style.animationDelay = `${Math.random() * 6}s, 0s`;
+            photoFlow.appendChild(photoEl);
+            photos.push(photoEl);
+        };
+        currentIndex++;
+    }, appearInterval);
+}
+
+/* 心形公式 */
+function heartPosition(rad) {
+    return [
+        Math.pow(Math.sin(rad), 3),
+        -(15 * Math.cos(rad) - 5 * Math.cos(2 * rad) - 2 * Math.cos(3 * rad) - Math.cos(4 * rad))
+    ];
+}
+function scaleAndTranslate(pos, sx, sy, dx, dy) {
+    return [dx + pos[0] * sx, dy + pos[1] * sy];
+}
+
+/* 照片依次飞入心形 */
+function startRomanticFinale() {
+    let heartPoints = [];
+    let dr = (Math.PI * 2) / photos.length;
+    for (let i = 0; i < Math.PI * 2; i += dr) {
+        heartPoints.push(
+            scaleAndTranslate(heartPosition(i), 270, 18, window.innerWidth/2, window.innerHeight/2)
+        );
+    }
+
+    // 将左右照片分组
+    let leftGroup = [];
+    let rightGroup = [];
+    photos.forEach((img, i) => {
+        let target = heartPoints[i];
+        if (target[0] < window.innerWidth / 2) {
+            leftGroup.push({img, target});
+        } else {
+            rightGroup.push({img, target});
+        }
+    });
+
+    let index = 0;
+    let steps = 50; // 飞入速度
+    function flyPair() {
+        if (index >= Math.max(leftGroup.length, rightGroup.length)) {
+            showCenterTitle();
+            startFloatingBackgroundText();
+            return;
+        }
+
+        // 左侧
+        if (index < leftGroup.length) {
+            movePhoto(leftGroup[index].img, leftGroup[index].target, steps);
+        }
+        // 右侧
+        if (index < rightGroup.length) {
+            movePhoto(rightGroup[index].img, rightGroup[index].target, steps);
+        }
+
+        index++;
+        setTimeout(flyPair, 120); // 每对照片的间隔
+    }
+
+    function movePhoto(img, target, steps) {
+        let startX = parseFloat(img.style.left);
+        let startY = parseFloat(img.style.top);
+        let dx = target[0] - startX;
+        let dy = target[1] - startY;
+        let stepCount = 0;
+
+        function animateMove() {
+            stepCount++;
+            let progress = stepCount / steps;
+            img.style.left = startX + dx * progress + 'px';
+            img.style.top  = startY + dy * progress + 'px';
+            if (stepCount < steps) {
+                requestAnimationFrame(animateMove);
+            }
+        }
+        animateMove();
+    }
+
+    // 启动从左右同时进入的心形拼合
+    flyPair();
+}
+
+
+/* 中心标题淡入 */
+function showCenterTitle(){
+    title.style.opacity = 1;
+}
+
+/* 漂浮文字效果 */
+function startFloatingBackgroundText() {
+    setInterval(() => {
+        createFloatingText();
+    }, 120);
+}
+
+function createFloatingText() {
+    const text = document.createElement("div");
+    text.className = "floatingText";
+    text.innerHTML = `<span class="cn">喜欢盼盼</span> <span class="en">Love Panpan</span>`;
+    let startX = Math.random() * window.innerWidth;
+    let startY = Math.random() * window.innerHeight;
+    let driftX = (Math.random() - 0.5) * 1.5;
+    let driftY = (Math.random() - 0.5) * 1.5;
+    text.style.left = `${startX}px`;
+    text.style.top = `${startY}px`;
+    document.body.appendChild(text);
+    let opacity = 1;
+    function animate() {
+        startX += driftX;
+        startY += driftY;
+        opacity -= 0.004;
+        text.style.left = `${startX}px`;
+        text.style.top = `${startY}px`;
+        text.style.opacity = opacity;
+        if (opacity > 0) {
+            requestAnimationFrame(animate);
+        } else {
+            text.remove();
+        }
+    }
+    requestAnimationFrame(animate);
+}
+
+/* 粒子爱心背景 */
+const canvas = document.getElementById('heart');
+const ctx = canvas.getContext('2d');
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+const rand = Math.random;
+let pointsOrigin = [];
+let drP = 0.1;
+for (let i = 0; i < Math.PI * 2; i += drP)
+    pointsOrigin.push(scaleAndTranslate(heartPosition(i), 210, 13, 0, 0));
+for (let i = 0; i < Math.PI * 2; i += drP)
+    pointsOrigin.push(scaleAndTranslate(heartPosition(i), 150, 9, 0, 0));
+for (let i = 0; i < Math.PI * 2; i += drP)
+    pointsOrigin.push(scaleAndTranslate(heartPosition(i), 90, 5, 0, 0));
+
+let heartPointsCount = pointsOrigin.length;
+let targetPoints = [];
+function pulse(kx, ky) {
+    for (let i = 0; i < pointsOrigin.length; i++) {
+        targetPoints[i] = [
+            kx * pointsOrigin[i][0] + canvas.width / 2,
+            ky * pointsOrigin[i][1] + canvas.height / 2
+        ];
+    }
+}
+
+let traceCount = 50;
+let particles = [];
+for (let i = 0; i < heartPointsCount; i++) {
+    let x = rand() * canvas.width;
+    let y = rand() * canvas.height;
+    particles[i] = {
+        vx: 0, vy: 0, speed: rand() + 5,
+        q: ~~(rand() * heartPointsCount),
+        D: 2 * (i % 2) - 1,
+        force: 0.2 * rand() + 0.7,
+        f: `hsla(0,${~~(40 * rand() + 60)}%,${~~(60 * rand() + 20)}%,.3)`,
+        trace: Array.from({length: traceCount}, () => ({x, y}))
+    };
+}
+
+let timeStep = 0;
+function loop() {
+    let n = -Math.cos(timeStep);
+    pulse((1 + n) * .5, (1 + n) * .5);
+    timeStep += ((Math.sin(timeStep)) < 0 ? 9 : (n > 0.8) ? .2 : 1) * 0.01;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 0.7;
+    particles.forEach(u => {
+        let q = targetPoints[u.q];
+        let dx = u.trace[0].x - q[0];
+        let dy = u.trace[0].y - q[1];
+        let length = Math.sqrt(dx**2 + dy**2);
+        if (10 > length) {
+            if (0.95 < rand()) u.q = ~~(rand() * heartPointsCount);
+            else {
+                if (0.99 < rand()) u.D *= -1;
+                u.q += u.D;
+                u.q %= heartPointsCount;
+                if (u.q < 0) u.q += heartPointsCount;
+            }
+        }
+        u.vx += -dx / length * u.speed;
+        u.vy += -dy / length * u.speed;
+        u.trace[0].x += u.vx;
+        u.trace[0].y += u.vy;
+        u.vx *= u.force;
+        u.vy *= u.force;
+        for (let k = 0; k < u.trace.length - 1;) {
+            let T = u.trace[k], N = u.trace[++k];
+            N.x -= 0.4 * (N.x - T.x);
+            N.y -= 0.4 * (N.y - T.y);
+        }
+        ctx.fillStyle = u.f;
+        for (let k = 0; k < u.trace.length; k++) {
+            ctx.fillRect(u.trace[k].x, u.trace[k].y, 1, 1);
+        }
+    });
+    requestAnimationFrame(loop);
+}
+loop();
+
+/* 启动照片加载 */
+preloadPhotos(totalPhotos);
+
+/* 音乐按钮控制 */
+window.addEventListener('load', () => {
+    const music = document.getElementById('music');
+    const btn = document.getElementById('musicBtn');
+
+    music.play().then(()=>{
+        btn.textContent = "⏸";
+    }).catch(err => {
+        console.warn("自动播放被阻止，需要点击按钮:", err);
+    });
+
+    btn.addEventListener('click', () => {
+        if (music.paused) {
+            music.play().then(()=>{
+                btn.textContent = "⏸";
+            }).catch(err => console.warn("播放失败:", err));
+        } else {
+            music.pause();
+            btn.textContent = "🎵";
+        }
+    });
+});
+</script>
+
+</body>
+</html>
