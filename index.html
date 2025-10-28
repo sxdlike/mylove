@@ -166,19 +166,22 @@ function preloadPhotos(count) {
             setTimeout(startRomanticFinale, 1000);
             return;
         }
-        const img = new Image();
-        img.src = `images/0${currentIndex}.jpg`;
-        img.onload = () => {
-            let photoEl = document.createElement('img');
-            photoEl.src = img.src;
-            photoEl.alt = `浪漫回忆${currentIndex}`;
-            photoEl.className = 'photo';
-            photoEl.style.left = Math.random() * window.innerWidth + 'px';
-            photoEl.style.top  = Math.random() * window.innerHeight + 'px';
-            photoEl.style.animationDelay = `${Math.random() * 6}s, 0s`;
-            photoFlow.appendChild(photoEl);
-            photos.push(photoEl);
-        };
+const img = new Image();
+// 这里确保编号是两位，比如 01.jpg, 02.jpg
+img.src = `images/${String(currentIndex).padStart(2, '0')}.jpg`;
+
+img.onload = () => {
+    let photoEl = document.createElement('img');
+    photoEl.src = img.src;
+    photoEl.alt = `浪漫回忆${currentIndex}`;
+    photoEl.className = 'photo';
+    photoEl.style.left = Math.random() * window.innerWidth + 'px';
+    photoEl.style.top  = Math.random() * window.innerHeight + 'px';
+    photoEl.style.animationDelay = `${Math.random() * 6}s, 0s`;
+    photoFlow.appendChild(photoEl);
+    photos.push(photoEl);
+};
+
         currentIndex++;
     }, appearInterval);
 }
