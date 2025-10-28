@@ -159,7 +159,7 @@ let photos = [];
 /* 照片加载并出现 */
 function preloadPhotos(count) {
     let currentIndex = 1;
-    let appearInterval = 200;
+    let appearInterval = 500;
     const timer = setInterval(() => {
         if (currentIndex > count) {
             clearInterval(timer);
@@ -167,7 +167,7 @@ function preloadPhotos(count) {
             return;
         }
         const img = new Image();
-        img.src = `images/p${currentIndex}.jpg`;
+        img.src = `images/g${currentIndex}.jpg`;
         img.onload = () => {
             let photoEl = document.createElement('img');
             photoEl.src = img.src;
@@ -211,7 +211,7 @@ function startRomanticFinale() {
         }
     });
     let index = 0;
-    let steps = 50;
+    let steps = 200;
     function flyPair() {
         if (index >= Math.max(leftGroup.length, rightGroup.length)) {
             showCenterTitle();
@@ -276,7 +276,7 @@ function startFloatingBackgroundText() {
             }
         }
         requestAnimationFrame(animate);
-    }, 120);
+    }, 500);
 }
 
 /* 粒子爱心背景 */
