@@ -2,138 +2,117 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>你的太阳我的心~</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 <style>
-body {
-    margin: 0;
-    font-family: "STKaiti", serif;
-    overflow: hidden;
-    background: #000;
-}
-
-/* 照片区域 */
-#photoFlow {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-}
-.photo {
-    position: absolute;
-    width: 100px;
-    height: 70px;
-    object-fit: cover;
-    border-radius: 6px;
-    box-shadow: 0 0 5px rgba(255,255,255,0.3);
-    opacity: 0;
-    animation: floatUpDown 6s ease-in-out infinite, fadeIn 1.5s forwards;
-}
-@keyframes floatUpDown {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-}
-@keyframes fadeIn {
-    to { opacity: 0.9; }
-}
-
-/* 中心标题呼吸闪烁 */
-#child {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    font-size: clamp(30px, 5vw, 48px);
-    color: #f584b7;
-    text-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 25px rgba(255,192,203,0.8);
-    opacity: 0;
-    transition: opacity 2s ease;
-    animation: heartbeatTitle 1.5s infinite;
-}
-@keyframes heartbeatTitle {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.85; }
-}
-
-/* 粒子心形画布 */
-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    z-index: 1;
-    pointer-events: none;
-}
-
-/* 漂浮文字效果 */
-.floatingText {
-    position: absolute;
-    font-size: 32px;
-    font-weight: bold;
-    pointer-events: none;
-    user-select: none;
-    z-index: 2;
-    opacity: 1;
-}
-.floatingText .cn {
-    font-family: "KaiTi","STKaiti",serif;
-    color: #ffb6c1;
-    text-shadow: 0 0 8px #fff, 0 0 15px #ffb6c1;
-}
-.floatingText .en {
-    font-family: "Pacifico", cursive;
-    color: #ffd1dc;
-    text-shadow: 0 0 8px #fff, 0 0 15px #ffd1dc;
-}
-
-/* 单一 ❤️ 按钮 */
-/* ❤️ 按钮容器 */
-#playBtn {
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    cursor: pointer;
-    animation: heartbeatBtn 1.2s infinite ease-in-out, rotateFloat 6s infinite linear;
-    z-index: 999;
-}
-
-/* ❤️ 图标样式 */
-#playBtn span {
-    font-size: 100px;
-    color: #ff4d6d;
-    text-shadow: 0 0 20px rgba(255,77,109,0.8);
-    animation: glow 1s infinite alternate;
-}
-
-/* 心跳呼吸 */
-@keyframes heartbeatBtn {
-    0%, 100% { transform: translate(-50%, -50%) scale(1);}
-    50% { transform: translate(-50%, -50%) scale(1.2);}
-}
-
-/* 光晕闪烁 */
-@keyframes glow {
-    from { opacity: 0.7; }
-    to { opacity: 1; }
-}
-
-/* ❤️ 缓慢旋转+上下浮动效果 */
-@keyframes rotateFloat {
-    0% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
-    25% { transform: translate(-50%, -50%) rotate(3deg) translateY(-5px); }
-    50% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
-    75% { transform: translate(-50%, -50%) rotate(-3deg) translateY(5px); }
-    100% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
-}
-
-/* 点击淡出 */
-#playBtn.fadeOut {
-    animation: fadeAway 0.8s forwards;
-}
-@keyframes fadeAway {
-    to { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-}
-
+    body {
+        margin: 0;
+        font-family: "STKaiti", serif;
+        overflow: hidden;
+        background: #000;
+    }
+    #photoFlow {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: 0;
+    }
+    .photo {
+        position: absolute;
+        width: 100px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 6px;
+        box-shadow: 0 0 5px rgba(255,255,255,0.3);
+        opacity: 0;
+        animation: floatUpDown 6s ease-in-out infinite, fadeIn 1.5s forwards;
+    }
+    @keyframes floatUpDown {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+    }
+    @keyframes fadeIn {
+        to { opacity: 0.9; }
+    }
+    #child {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        font-size: clamp(30px, 5vw, 48px);
+        color: #f584b7;
+        text-shadow: 0 0 15px rgba(255,255,255,0.8), 0 0 25px rgba(255,192,203,0.8);
+        opacity: 0;
+        transition: opacity 2s ease;
+        animation: heartbeatTitle 1.5s infinite;
+    }
+    @keyframes heartbeatTitle {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.85; }
+    }
+    canvas {
+        position: fixed;
+        top: 0; left: 0;
+        z-index: 1;
+        pointer-events: none;
+    }
+    .floatingText {
+        position: absolute;
+        font-size: 32px;
+        font-weight: bold;
+        pointer-events: none;
+        user-select: none;
+        z-index: 2;
+        opacity: 1;
+    }
+    .floatingText .cn {
+        font-family: "KaiTi","STKaiti",serif;
+        color: #ffb6c1;
+        text-shadow: 0 0 8px #fff, 0 0 15px #ffb6c1;
+    }
+    .floatingText .en {
+        font-family: "Pacifico", cursive;
+        color: #ffd1dc;
+        text-shadow: 0 0 8px #fff, 0 0 15px #ffd1dc;
+    }
+    #playBtn {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        animation: heartbeatBtn 1.2s infinite ease-in-out, rotateFloat 6s infinite linear;
+        z-index: 999;
+    }
+    #playBtn span {
+        font-size: 100px;
+        color: #ff4d6d;
+        text-shadow: 0 0 20px rgba(255,77,109,0.8);
+        animation: glow 1s infinite alternate;
+    }
+    @keyframes heartbeatBtn {
+        0%, 100% { transform: translate(-50%, -50%) scale(1);}
+        50% { transform: translate(-50%, -50%) scale(1.2);}
+    }
+    @keyframes glow {
+        from { opacity: 0.7; }
+        to { opacity: 1; }
+    }
+    @keyframes rotateFloat {
+        0% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
+        25% { transform: translate(-50%, -50%) rotate(3deg) translateY(-5px); }
+        50% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
+        75% { transform: translate(-50%, -50%) rotate(-3deg) translateY(5px); }
+        100% { transform: translate(-50%, -50%) rotate(0deg) translateY(0px); }
+    }
+    #playBtn.fadeOut {
+        animation: fadeAway 0.8s forwards;
+    }
+    @keyframes fadeAway {
+        to { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    }
 </style>
 </head>
 <body>
@@ -141,286 +120,256 @@ canvas {
 <div id="photoFlow"></div>
 <div id="child">💗东东与盼盼💗</div>
 <canvas id="heart"></canvas>
-
-<!-- ❤️ 按钮 -->
 <div id="playBtn"><span>❤️</span></div>
 
-<!-- 音乐播放器 -->
 <audio id="music" preload="auto" loop>
     <source src="images/如一.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-const photoFlow = document.getElementById('photoFlow');
-const title = document.getElementById("child");
-let totalPhotos = 60;
-let photos = [];
+(() => {
+    const CONFIG = {
+        totalPhotos: 60,
+        appearInterval: 500,
+        heartScale: { x: 270, y: 18 },
+        floatingTextInterval: 500,
+        particleLayers: [
+            { sx: 210, sy: 13 },
+            { sx: 150, sy: 9 },
+            { sx: 90, sy: 5 }
+        ]
+    };
 
-/* 照片加载并出现 */
-function preloadPhotos(count) {
-    let currentIndex = 1;
-    let appearInterval = 500;
-    const timer = setInterval(() => {
-        if (currentIndex > count) {
-            clearInterval(timer);
-            setTimeout(startRomanticFinale, 1000);
-            return;
-        }
-const img = new Image();
-// 这里确保编号是两位，比如 01.jpg, 02.jpg
-img.src = `images/${String(currentIndex).padStart(2, '0')}.jpg`;
+    const photoFlow = document.getElementById('photoFlow');
+    const title = document.getElementById("child");
+    const canvas = document.getElementById('heart');
+    const ctx = canvas.getContext('2d');
+    const playBtn = document.getElementById('playBtn');
+    const music = document.getElementById('music');
 
-img.onload = () => {
-    let photoEl = document.createElement('img');
-    photoEl.src = img.src;
-    photoEl.alt = `浪漫回忆${currentIndex}`;
-    photoEl.className = 'photo';
-    photoEl.style.left = Math.random() * window.innerWidth + 'px';
-    photoEl.style.top  = Math.random() * window.innerHeight + 'px';
-    photoEl.style.animationDelay = `${Math.random() * 6}s, 0s`;
-    photoFlow.appendChild(photoEl);
-    photos.push(photoEl);
-};
-
-        currentIndex++;
-    }, appearInterval);
-}
-
-/* 心形公式 */
-function heartPosition(rad) {
-    return [
+    let photos = [];
+    const heartPosition = rad => [
         Math.pow(Math.sin(rad), 3),
         -(15 * Math.cos(rad) - 5 * Math.cos(2 * rad) - 2 * Math.cos(3 * rad) - Math.cos(4 * rad))
     ];
-}
-function scaleAndTranslate(pos, sx, sy, dx, dy) {
-    return [dx + pos[0] * sx, dy + pos[1] * sy];
-}
+    const scaleAndTranslate = (pos, sx, sy, dx, dy) => [dx + pos[0] * sx, dy + pos[1] * sy];
+    const rand = Math.random;
 
-/* 照片飞向心形 */
-function startRomanticFinale() {
-    let heartPoints = [];
-    let dr = (Math.PI * 2) / photos.length;
-    for (let i = 0; i < Math.PI * 2; i += dr) {
-        heartPoints.push(scaleAndTranslate(heartPosition(i), 270, 18, window.innerWidth/2, window.innerHeight/2));
-    }
-    let leftGroup = [], rightGroup = [];
-    photos.forEach((img, i) => {
-        let target = heartPoints[i];
-        if (target[0] < window.innerWidth / 2) {
-            leftGroup.push({img, target});
-        } else {
-            rightGroup.push({img, target});
-        }
-    });
-    let index = 0;
-    let steps = 200;
-    function flyPair() {
-        if (index >= Math.max(leftGroup.length, rightGroup.length)) {
-            showCenterTitle();
-            startFloatingBackgroundText();
-            return;
-        }
-        if (index < leftGroup.length) movePhoto(leftGroup[index].img, leftGroup[index].target, steps);
-        if (index < rightGroup.length) movePhoto(rightGroup[index].img, rightGroup[index].target, steps);
-        index++;
-        setTimeout(flyPair, 120);
-    }
-    function movePhoto(img, target, steps) {
-        let startX = parseFloat(img.style.left);
-        let startY = parseFloat(img.style.top);
-        let dx = target[0] - startX;
-        let dy = target[1] - startY;
-        let stepCount = 0;
-        function animateMove() {
-            stepCount++;
-            let progress = stepCount / steps;
-            img.style.left = startX + dx * progress + 'px';
-            img.style.top  = startY + dy * progress + 'px';
-            if (stepCount < steps) {
-                requestAnimationFrame(animateMove);
+    function preloadPhotos(count) {
+        let currentIndex = 1;
+        const timer = setInterval(() => {
+            if (currentIndex > count) {
+                clearInterval(timer);
+                setTimeout(startRomanticFinale, 1000);
+                return;
             }
-        }
-        animateMove();
+            const src = `images/${String(currentIndex).padStart(2, '0')}.jpg`;
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                const photoEl = document.createElement('img');
+                photoEl.src = src;
+                photoEl.className = 'photo';
+                photoEl.style.left = `${Math.random() * window.innerWidth}px`;
+                photoEl.style.top = `${Math.random() * window.innerHeight}px`;
+                photoEl.style.animationDelay = `${Math.random() * 6}s, 0s`;
+                photoFlow.appendChild(photoEl);
+                photos.push(photoEl);
+            };
+            currentIndex++;
+        }, CONFIG.appearInterval);
     }
-    flyPair();
-}
 
-/* 中心标题淡入 */
-function showCenterTitle(){
-    title.style.opacity = 1;
-}
-
-/* 漂浮文字 */
-function startFloatingBackgroundText() {
-    setInterval(() => {
-        const text = document.createElement("div");
-        text.className = "floatingText";
-        text.innerHTML = `<span class="cn">喜欢盼盼</span> <span class="en">Love Panpan</span>`;
-        let startX = Math.random() * window.innerWidth;
-        let startY = Math.random() * window.innerHeight;
-        let driftX = (Math.random() - 0.5) * 1.5;
-        let driftY = (Math.random() - 0.5) * 1.5;
-        text.style.left = `${startX}px`;
-        text.style.top = `${startY}px`;
-        document.body.appendChild(text);
-        let opacity = 1;
-        function animate() {
-            startX += driftX;
-            startY += driftY;
-            opacity -= 0.004;
-            text.style.left = `${startX}px`;
-            text.style.top = `${startY}px`;
-            text.style.opacity = opacity;
-            if (opacity > 0) {
-                requestAnimationFrame(animate);
-            } else {
-                text.remove();
-            }
+    function startRomanticFinale() {
+        const heartPoints = [];
+        const dr = (Math.PI * 2) / photos.length;
+        for (let i = 0; i < Math.PI * 2; i += dr) {
+            heartPoints.push(
+                scaleAndTranslate(heartPosition(i), CONFIG.heartScale.x, CONFIG.heartScale.y,
+                                  window.innerWidth / 2, window.innerHeight / 2)
+            );
         }
-        requestAnimationFrame(animate);
-    }, 500);
-}
-
-/* 粒子爱心背景 */
-const canvas = document.getElementById('heart');
-const ctx = canvas.getContext('2d');
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-const rand = Math.random;
-let pointsOrigin = [];
-let drP = 0.1;
-for (let i = 0; i < Math.PI * 2; i += drP)
-    pointsOrigin.push(scaleAndTranslate(heartPosition(i), 210, 13, 0, 0));
-for (let i = 0; i < Math.PI * 2; i += drP)
-    pointsOrigin.push(scaleAndTranslate(heartPosition(i), 150, 9, 0, 0));
-for (let i = 0; i < Math.PI * 2; i += drP)
-    pointsOrigin.push(scaleAndTranslate(heartPosition(i), 90, 5, 0, 0));
-
-let heartPointsCount = pointsOrigin.length;
-let targetPoints = [];
-function pulse(kx, ky) {
-    for (let i = 0; i < pointsOrigin.length; i++) {
-        targetPoints[i] = [
-            kx * pointsOrigin[i][0] + canvas.width / 2,
-            ky * pointsOrigin[i][1] + canvas.height / 2
-        ];
-    }
-}
-let traceCount = 50;
-let particles = [];
-for (let i = 0; i < heartPointsCount; i++) {
-    let x = rand() * canvas.width;
-    let y = rand() * canvas.height;
-    particles[i] = {
-        vx: 0, vy: 0, speed: rand() + 5,
-        q: ~~(rand() * heartPointsCount),
-        D: 2 * (i % 2) - 1,
-        force: 0.2 * rand() + 0.7,
-        f: `hsla(0,${~~(40 * rand() + 60)}%,${~~(60 * rand() + 20)}%,.3)`,
-        trace: Array.from({length: traceCount}, () => ({x, y}))
-    };
-}
-let timeStep = 0;
-function loop() {
-    let n = -Math.cos(timeStep);
-    pulse((1 + n) * .5, (1 + n) * .5);
-    timeStep += ((Math.sin(timeStep)) < 0 ? 9 : (n > 0.8) ? .2 : 1) * 0.01;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.globalAlpha = 0.7;
-    particles.forEach(u => {
-        let q = targetPoints[u.q];
-        let dx = u.trace[0].x - q[0];
-        let dy = u.trace[0].y - q[1];
-        let length = Math.sqrt(dx**2 + dy**2);
-        if (10 > length) {
-            if (0.95 < rand()) u.q = ~~(rand() * heartPointsCount);
-            else {
-                if (0.99 < rand()) u.D *= -1;
-                u.q += u.D;
-                u.q %= heartPointsCount;
-                if (u.q < 0) u.q += heartPointsCount;
-            }
-        }
-        u.vx += -dx / length * u.speed;
-        u.vy += -dy / length * u.speed;
-        u.trace[0].x += u.vx;
-        u.trace[0].y += u.vy;
-        u.vx *= u.force;
-        u.vy *= u.force;
-        for (let k = 0; k < u.trace.length - 1;) {
-            let T = u.trace[k], N = u.trace[++k];
-            N.x -= 0.4 * (N.x - T.x);
-            N.y -= 0.4 * (N.y - T.y);
-        }
-        ctx.fillStyle = u.f;
-        for (let k = 0; k < u.trace.length; k++) {
-            ctx.fillRect(u.trace[k].x, u.trace[k].y, 1, 1);
-        }
-    });
-    requestAnimationFrame(loop);
-}
-loop();
-
-/* 点击爱心烟花 */
-function heartExplosion(x, y) {
-    let particles = [];
-    const colors = ["#ff4d6d", "#ffb6c1", "#ff69b4", "#ff1493", "#db7093"];
-    for (let i = 0; i < 30; i++) {
-        const elem = document.createElement('div');
-        elem.textContent = '❤️';
-        elem.style.position = 'fixed';
-        elem.style.left = `${x}px`;
-        elem.style.top = `${y}px`;
-        elem.style.fontSize = `${Math.random() * 20 + 14}px`;
-        elem.style.pointerEvents = 'none';
-        elem.style.zIndex = 1000;
-        elem.style.color = colors[Math.floor(Math.random() * colors.length)];
-        document.body.appendChild(elem);
-        particles.push({
-            el: elem,
-            angle: Math.random() * 2 * Math.PI,
-            speed: Math.random() * 5 + 2,
-            opacity: 1
+        let index = 0;
+        const steps = 200;
+        const leftGroup = [], rightGroup = [];
+        photos.forEach((img, i) => {
+            const target = heartPoints[i];
+            (target[0] < window.innerWidth / 2 ? leftGroup : rightGroup).push({ img, target });
         });
-    }
-    function animate() {
-        particles.forEach(p => {
-            const left = parseFloat(p.el.style.left);
-            const top = parseFloat(p.el.style.top);
-            p.el.style.left = `${left + Math.cos(p.angle) * p.speed}px`;
-            p.el.style.top = `${top + Math.sin(p.angle) * p.speed}px`;
-            p.opacity -= 0.02;
-            p.el.style.opacity = p.opacity;
-            if (p.opacity <= 0) {
-                p.el.remove();
+
+        function movePhoto(img, target) {
+            const startX = parseFloat(img.style.left);
+            const startY = parseFloat(img.style.top);
+            const dx = target[0] - startX;
+            const dy = target[1] - startY;
+            let stepCount = 0;
+            function animateMove() {
+                stepCount++;
+                const progress = stepCount / steps;
+                img.style.left = `${startX + dx * progress}px`;
+                img.style.top  = `${startY + dy * progress}px`;
+                if (stepCount < steps) requestAnimationFrame(animateMove);
             }
-        });
-        particles = particles.filter(p => p.opacity > 0);
-        if (particles.length > 0) {
+            animateMove();
+        }
+
+        function flyPair() {
+            if (index >= Math.max(leftGroup.length, rightGroup.length)) {
+                showCenterTitle();
+                startFloatingText();
+                return;
+            }
+            if (index < leftGroup.length) movePhoto(leftGroup[index].img, leftGroup[index].target);
+            if (index < rightGroup.length) movePhoto(rightGroup[index].img, rightGroup[index].target);
+            index++;
+            setTimeout(flyPair, 120);
+        }
+        flyPair();
+    }
+
+    function showCenterTitle() {
+        title.style.opacity = 1;
+    }
+
+    function startFloatingText() {
+        setInterval(() => {
+            const text = document.createElement("div");
+            text.className = "floatingText";
+            text.innerHTML = `<span class="cn">喜欢盼盼</span> <span class="en">Love Panpan</span>`;
+            let x = Math.random() * window.innerWidth;
+            let y = Math.random() * window.innerHeight;
+            const driftX = (rand() - 0.5) * 1.5;
+            const driftY = (rand() - 0.5) * 1.5;
+            let opacity = 1;
+            text.style.left = `${x}px`;
+            text.style.top = `${y}px`;
+            document.body.appendChild(text);
+            function animate() {
+                x += driftX;
+                y += driftY;
+                opacity -= 0.004;
+                text.style.left = `${x}px`;
+                text.style.top = `${y}px`;
+                text.style.opacity = opacity;
+                if (opacity > 0) requestAnimationFrame(animate);
+                else text.remove();
+            }
             requestAnimationFrame(animate);
-        }
+        }, CONFIG.floatingTextInterval);
     }
-    animate();
-}
 
-/* 播放按钮点击启动动画 */
-const playBtn = document.getElementById('playBtn');
-const music = document.getElementById('music');
-let started = false;
-playBtn.addEventListener('click', () => {
-    if (!started) {
+    function initHeartParticles() {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        let pointsOrigin = [];
+        CONFIG.particleLayers.forEach(layer => {
+            for (let i = 0; i < Math.PI * 2; i += 0.1)
+                pointsOrigin.push(scaleAndTranslate(heartPosition(i), layer.sx, layer.sy, 0, 0));
+        });
+        const heartPointsCount = pointsOrigin.length;
+        let targetPoints = [], particles = [];
+        for (let i = 0; i < heartPointsCount; i++) {
+            let x = rand() * canvas.width;
+            let y = rand() * canvas.height;
+            particles[i] = {
+                vx: 0, vy: 0, speed: rand() + 5,
+                q: ~~(rand() * heartPointsCount),
+                D: 2 * (i % 2) - 1,
+                force: 0.2 * rand() + 0.7,
+                f: `hsla(0,${~~(40 * rand() + 60)}%,${~~(60 * rand() + 20)}%,.3)`,
+                trace: Array.from({length: 50}, () => ({x, y}))
+            };
+        }
+        let timeStep = 0;
+        (function loop() {
+            const n = -Math.cos(timeStep);
+            const kx = (1 + n) * .5, ky = (1 + n) * .5;
+            targetPoints = pointsOrigin.map(p => [kx * p[0] + canvas.width / 2, ky * p[1] + canvas.height / 2]);
+            timeStep += ((Math.sin(timeStep) < 0) ? 9 : (n > 0.8 ? .2 : 1)) * 0.01;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(u => {
+                let q = targetPoints[u.q];
+                let dx = u.trace[0].x - q[0];
+                let dy = u.trace[0].y - q[1];
+                let length = Math.sqrt(dx**2 + dy**2);
+                if (length < 10) {
+                    if (0.95 < rand()) u.q = ~~(rand() * heartPointsCount);
+                    else {
+                        if (0.99 < rand()) u.D *= -1;
+                        u.q = (u.q + u.D + heartPointsCount) % heartPointsCount;
+                    }
+                }
+                u.vx += -dx / length * u.speed;
+                u.vy += -dy / length * u.speed;
+                u.trace[0].x += u.vx;
+                u.trace[0].y += u.vy;
+                u.vx *= u.force;
+                u.vy *= u.force;
+                for (let k = 0; k < u.trace.length - 1;) {
+                    const T = u.trace[k], N = u.trace[++k];
+                    N.x -= 0.4 * (N.x - T.x);
+                    N.y -= 0.4 * (N.y - T.y);
+                }
+                ctx.fillStyle = u.f;
+                u.trace.forEach(point => {
+                    ctx.fillRect(point.x, point.y, 1, 1);
+                });
+            });
+            requestAnimationFrame(loop);
+        })();
+    }
+
+    function heartExplosion(x, y) {
+        let particles = [];
+        const colors = ["#ff4d6d", "#ffb6c1", "#ff69b4", "#ff1493", "#db7093"];
+        for (let i = 0; i < 30; i++) {
+            const elem = document.createElement('div');
+            elem.textContent = '❤️';
+            elem.style.position = 'fixed';
+            elem.style.left = `${x}px`;
+            elem.style.top = `${y}px`;
+            elem.style.fontSize = `${Math.random() * 20 + 14}px`;
+            elem.style.pointerEvents = 'none';
+            elem.style.zIndex = 1000;
+            elem.style.color = colors[Math.floor(Math.random() * colors.length)];
+            document.body.appendChild(elem);
+            particles.push({
+                el: elem,
+                angle: rand() * Math.PI * 2,
+                speed: rand() * 5 + 2,
+                opacity: 1
+            });
+        }
+        function animate() {
+            particles.forEach(p => {
+                const left = parseFloat(p.el.style.left);
+                const top = parseFloat(p.el.style.top);
+                p.el.style.left = `${left + Math.cos(p.angle) * p.speed}px`;
+                p.el.style.top = `${top + Math.sin(p.angle) * p.speed}px`;
+                p.opacity -= 0.02;
+                p.el.style.opacity = p.opacity;
+                if (p.opacity <= 0) p.el.remove();
+            });
+            particles = particles.filter(p => p.opacity > 0);
+            if (particles.length > 0) requestAnimationFrame(animate);
+        }
+        animate();
+    }
+
+    let started = false;
+    playBtn.addEventListener('click', () => {
+        if (started) return;
         started = true;
         music.play().catch(err => console.warn("播放失败:", err));
         const rect = playBtn.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        heartExplosion(centerX, centerY);
-        preloadPhotos(totalPhotos);
+        heartExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        preloadPhotos(CONFIG.totalPhotos);
         playBtn.classList.add('fadeOut');
-        setTimeout(()=> playBtn.remove(), 800);
-    }
-});
+        setTimeout(() => playBtn.remove(), 800);
+    });
+
+    initHeartParticles();
+})();
 </script>
 
 </body>
