@@ -130,7 +130,6 @@
 (() => {
     const CONFIG = {
         totalPhotos: 60,
-        appearInterval: 500,
         heartScale: { x: 270, y: 18 },
         floatingTextInterval: 500,
         particleLayers: [
@@ -147,52 +146,114 @@
     const playBtn = document.getElementById('playBtn');
     const music = document.getElementById('music');
 
+    // 创建加载提示（在屏幕偏下位置）
+    const loadingDiv = document.createElement("div");
+    loadingDiv.style.position = "fixed";
+    loadingDiv.style.left = "50%";
+    loadingDiv.style.top = "65%";  // 中间偏下
+    loadingDiv.style.transform = "translate(-50%, -50%)";
+    loadingDiv.style.color = "#ffb6c1";
+    loadingDiv.style.fontSize = "clamp(20px, 4vw, 36px)";
+    loadingDiv.style.fontFamily = "'KaiTi','STKaiti',serif";
+    loadingDiv.style.textShadow = "0 0 15px rgba(255,255,255,0.7)";
+    loadingDiv.style.zIndex = 9999;
+    loadingDiv.innerHTML = "💖记忆正在加载中...";
+    loadingDiv.style.display = "none";
+    document.body.appendChild(loadingDiv);
+
     let photos = [];
+    const rand = Math.random;
     const heartPosition = rad => [
         Math.pow(Math.sin(rad), 3),
         -(15 * Math.cos(rad) - 5 * Math.cos(2 * rad) - 2 * Math.cos(3 * rad) - Math.cos(4 * rad))
     ];
     const scaleAndTranslate = (pos, sx, sy, dx, dy) => [dx + pos[0] * sx, dy + pos[1] * sy];
-    const rand = Math.random;
 
-    function preloadPhotos(count) {
-        let currentIndex = 1;
-        const timer = setInterval(() => {
-            if (currentIndex > count) {
-                clearInterval(timer);
-                setTimeout(startRomanticFinale, 1000);
-                return;
-            }
-            const src = `images/${String(currentIndex).padStart(2, '0')}.jpg`;
+    // 一次性预加载所有图片
+    function preloadAllPhotos(total, onComplete) {
+        let loadedCount = 0;
+        loadingDiv.style.display = "block"; // 显示加载提示
+        for (let i = 1; i <= total; i++) {
+            const src = `images/${String(i).padStart(2, '0')}.jpg`;
             const img = new Image();
             img.src = src;
             img.onload = () => {
-                const photoEl = document.createElement('img');
-                photoEl.src = src;
-                photoEl.className = 'photo';
-                photoEl.style.left = `${Math.random() * window.innerWidth}px`;
-                photoEl.style.top = `${Math.random() * window.innerHeight}px`;
-                photoEl.style.animationDelay = `${Math.random() * 6}s, 0s`;
-                photoFlow.appendChild(photoEl);
-                photos.push(photoEl);
+                photos.push(img);
+                loadedCount++;
+                loadingDiv.innerHTML = `💖记忆正在加载中... (${loadedCount}/${total})`;
+                if (loadedCount === total) {
+                    setTimeout(() => {
+                        loadingDiv.style.display = "none"; // 隐藏加载提示
+                        onComplete();
+                    }, 500); // 给提示留一点停留时间
+                }
             };
-            currentIndex++;
-        }, CONFIG.appearInterval);
+            img.onerror = () => {
+                console.warn(`图片加载失败: ${src}`);
+                loadedCount++;
+                if (loadedCount === total) {
+                    setTimeout(() => {
+                        loadingDiv.style.display = "none";
+                        onComplete();
+                    }, 500);
+                }
+            };
+        }
     }
 
+    // 逐张淡入展示照片
+    function showPhotosSequentially() {
+    let index = 0;
+    const interval = setInterval(() => {
+        if (index >= photos.length) {
+            clearInterval(interval);
+            setTimeout(startRomanticFinale, 500);
+            return;
+        }
+        const img = photos[index];
+        const photoEl = document.createElement('img');
+        photoEl.src = img.src;
+        photoEl.className = 'photo';
+        photoEl.style.left = `${Math.random() * window.innerWidth}px`;
+        photoEl.style.top = `${Math.random() * window.innerHeight}px`;
+        photoEl.style.opacity = "0";
+        // 初始状态透明，直接设置一个平滑过渡
+        photoEl.style.transition = "opacity 1s ease";
+        photoFlow.appendChild(photoEl);
+
+        // 先淡入到完全不透明
+        requestAnimationFrame(() => {
+            photoEl.style.opacity = "1";
+        });
+
+        // 1 秒后，透明度平滑降低到 0.6
+        setTimeout(() => {
+            photoEl.style.transition = "opacity 1.5s ease"; // 半透明平滑过渡
+            photoEl.style.opacity = "0.6";
+        }, 1000);
+
+        index++;
+    }, 180); // 每 180ms 出一张
+}
+
+
+
+    // 心形排列
     function startRomanticFinale() {
+        const allPhotoEls = [...photoFlow.querySelectorAll('img')];
         const heartPoints = [];
-        const dr = (Math.PI * 2) / photos.length;
+        const dr = (Math.PI * 2) / allPhotoEls.length;
         for (let i = 0; i < Math.PI * 2; i += dr) {
             heartPoints.push(
                 scaleAndTranslate(heartPosition(i), CONFIG.heartScale.x, CONFIG.heartScale.y,
                                   window.innerWidth / 2, window.innerHeight / 2)
             );
         }
+
         let index = 0;
         const steps = 200;
         const leftGroup = [], rightGroup = [];
-        photos.forEach((img, i) => {
+        allPhotoEls.forEach((img, i) => {
             const target = heartPoints[i];
             (target[0] < window.innerWidth / 2 ? leftGroup : rightGroup).push({ img, target });
         });
@@ -360,10 +421,12 @@
     playBtn.addEventListener('click', () => {
         if (started) return;
         started = true;
-        music.play().catch(err => console.warn("播放失败:", err));
-        const rect = playBtn.getBoundingClientRect();
-        heartExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
-        preloadPhotos(CONFIG.totalPhotos);
+        preloadAllPhotos(CONFIG.totalPhotos, () => {
+            music.play().catch(err => console.warn("播放失败:", err));
+            const rect = playBtn.getBoundingClientRect();
+            heartExplosion(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            showPhotosSequentially();
+        });
         playBtn.classList.add('fadeOut');
         setTimeout(() => playBtn.remove(), 800);
     });
@@ -371,6 +434,8 @@
     initHeartParticles();
 })();
 </script>
+
+
 
 </body>
 </html>
