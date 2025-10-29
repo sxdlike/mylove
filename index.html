@@ -47,6 +47,8 @@
         opacity: 0;
         transition: opacity 2s ease;
         animation: heartbeatTitle 1.5s infinite;
+        text-align: center;
+        word-break: break-word;
     }
     @keyframes heartbeatTitle {
         0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
@@ -113,6 +115,38 @@
     @keyframes fadeAway {
         to { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
     }
+
+    /* 📱 响应式设计 */
+    @media (max-width: 768px) {
+        .photo {
+            width: 18vw;
+            height: auto;
+        }
+        .floatingText {
+            font-size: 6vw;
+        }
+        #child {
+            font-size: clamp(24px, 6vw, 40px);
+        }
+        #playBtn span {
+            font-size: 18vw;
+        }
+    }
+    @media (max-width: 480px) {
+        .photo {
+            width: 24vw;
+            height: auto;
+        }
+        .floatingText {
+            font-size: 7vw;
+        }
+        #child {
+            font-size: clamp(20px, 7vw, 36px);
+        }
+        #playBtn span {
+            font-size: 22vw;
+        }
+    }
 </style>
 </head>
 <body>
@@ -130,7 +164,9 @@
 (() => {
     const CONFIG = {
         totalPhotos: 60,
-        heartScale: { x: 270, y: 18 },
+        heartScale: window.innerWidth < 768
+            ? { x: 150, y: 10 }
+            : { x: 270, y: 18 },
         floatingTextInterval: 500,
         particleLayers: [
             { sx: 210, sy: 13 },
@@ -146,14 +182,13 @@
     const playBtn = document.getElementById('playBtn');
     const music = document.getElementById('music');
 
-    // 创建加载提示（在屏幕偏下位置）
     const loadingDiv = document.createElement("div");
     loadingDiv.style.position = "fixed";
     loadingDiv.style.left = "50%";
-    loadingDiv.style.top = "65%";  // 中间偏下
+    loadingDiv.style.top = "65%";
     loadingDiv.style.transform = "translate(-50%, -50%)";
     loadingDiv.style.color = "#ffb6c1";
-    loadingDiv.style.fontSize = "clamp(20px, 4vw, 36px)";
+    loadingDiv.style.fontSize = window.innerWidth < 768 ? "5vw" : "clamp(20px, 4vw, 36px)";
     loadingDiv.style.fontFamily = "'KaiTi','STKaiti',serif";
     loadingDiv.style.textShadow = "0 0 15px rgba(255,255,255,0.7)";
     loadingDiv.style.zIndex = 9999;
@@ -169,10 +204,9 @@
     ];
     const scaleAndTranslate = (pos, sx, sy, dx, dy) => [dx + pos[0] * sx, dy + pos[1] * sy];
 
-    // 一次性预加载所有图片
     function preloadAllPhotos(total, onComplete) {
         let loadedCount = 0;
-        loadingDiv.style.display = "block"; // 显示加载提示
+        loadingDiv.style.display = "block";
         for (let i = 1; i <= total; i++) {
             const src = `images/${String(i).padStart(2, '0')}.jpg`;
             const img = new Image();
@@ -183,13 +217,12 @@
                 loadingDiv.innerHTML = `💖记忆正在加载中... (${loadedCount}/${total})`;
                 if (loadedCount === total) {
                     setTimeout(() => {
-                        loadingDiv.style.display = "none"; // 隐藏加载提示
+                        loadingDiv.style.display = "none";
                         onComplete();
-                    }, 500); // 给提示留一点停留时间
+                    }, 500);
                 }
             };
             img.onerror = () => {
-                console.warn(`图片加载失败: ${src}`);
                 loadedCount++;
                 if (loadedCount === total) {
                     setTimeout(() => {
@@ -201,44 +234,32 @@
         }
     }
 
-    // 逐张淡入展示照片
     function showPhotosSequentially() {
-    let index = 0;
-    const interval = setInterval(() => {
-        if (index >= photos.length) {
-            clearInterval(interval);
-            setTimeout(startRomanticFinale, 500);
-            return;
-        }
-        const img = photos[index];
-        const photoEl = document.createElement('img');
-        photoEl.src = img.src;
-        photoEl.className = 'photo';
-        photoEl.style.left = `${Math.random() * window.innerWidth}px`;
-        photoEl.style.top = `${Math.random() * window.innerHeight}px`;
-        photoEl.style.opacity = "0";
-        // 初始状态透明，直接设置一个平滑过渡
-        photoEl.style.transition = "opacity 1s ease";
-        photoFlow.appendChild(photoEl);
+        let index = 0;
+        const interval = setInterval(() => {
+            if (index >= photos.length) {
+                clearInterval(interval);
+                setTimeout(startRomanticFinale, 500);
+                return;
+            }
+            const img = photos[index];
+            const photoEl = document.createElement('img');
+            photoEl.src = img.src;
+            photoEl.className = 'photo';
+            photoEl.style.left = `${Math.random() * (window.innerWidth - 120)}px`;
+            photoEl.style.top = `${Math.random() * (window.innerHeight - 90)}px`;
+            photoEl.style.opacity = "0";
+            photoEl.style.transition = "opacity 1s ease";
+            photoFlow.appendChild(photoEl);
+            requestAnimationFrame(() => { photoEl.style.opacity = "1"; });
+            setTimeout(() => {
+                photoEl.style.transition = "opacity 1.5s ease";
+                photoEl.style.opacity = "0.6";
+            }, 1000);
+            index++;
+        }, 600);
+    }
 
-        // 先淡入到完全不透明
-        requestAnimationFrame(() => {
-            photoEl.style.opacity = "1";
-        });
-
-        // 1 秒后，透明度平滑降低到 0.6
-        setTimeout(() => {
-            photoEl.style.transition = "opacity 1.5s ease"; // 半透明平滑过渡
-            photoEl.style.opacity = "0.6";
-        }, 1000);
-
-        index++;
-    }, 180); // 每 180ms 出一张
-}
-
-
-
-    // 心形排列
     function startRomanticFinale() {
         const allPhotoEls = [...photoFlow.querySelectorAll('img')];
         const heartPoints = [];
@@ -249,7 +270,6 @@
                                   window.innerWidth / 2, window.innerHeight / 2)
             );
         }
-
         let index = 0;
         const steps = 200;
         const leftGroup = [], rightGroup = [];
@@ -257,7 +277,6 @@
             const target = heartPoints[i];
             (target[0] < window.innerWidth / 2 ? leftGroup : rightGroup).push({ img, target });
         });
-
         function movePhoto(img, target) {
             const startX = parseFloat(img.style.left);
             const startY = parseFloat(img.style.top);
@@ -273,7 +292,6 @@
             }
             animateMove();
         }
-
         function flyPair() {
             if (index >= Math.max(leftGroup.length, rightGroup.length)) {
                 showCenterTitle();
@@ -288,9 +306,7 @@
         flyPair();
     }
 
-    function showCenterTitle() {
-        title.style.opacity = 1;
-    }
+    function showCenterTitle() { title.style.opacity = 1; }
 
     function startFloatingText() {
         setInterval(() => {
@@ -306,9 +322,7 @@
             text.style.top = `${y}px`;
             document.body.appendChild(text);
             function animate() {
-                x += driftX;
-                y += driftY;
-                opacity -= 0.004;
+                x += driftX; y += driftY; opacity -= 0.004;
                 text.style.left = `${x}px`;
                 text.style.top = `${y}px`;
                 text.style.opacity = opacity;
@@ -434,8 +448,6 @@
     initHeartParticles();
 })();
 </script>
-
-
 
 </body>
 </html>
